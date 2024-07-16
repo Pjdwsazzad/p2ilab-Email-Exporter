@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Extractor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+  <style>
+    .email-card {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h1>Email Extractor</h1>
+    <form id="email-form" class="mb-3">
+      <div class="mb-3">
+        <label for="url" class="form-label">URL</label>
+        <input type="url" class="form-control" id="url" name="url" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Extract Emails</button>
+    </form>
+    <div id="email-container" class="card">
+      <div class="card-body">
+        <h5 class="card-title">Extracted Emails <span id="email-count"></span></h5>
+        <div id="email-list" class="email-card"></div>
+      </div>
+      <div class="card-footer">
+        <button id="copy-emails" class="btn btn-secondary">Copy Emails</button>
+        <button id="export-csv" class="btn btn-success">Export as CSV</button>
+        <button id="export-txt" class="btn btn-warning">Export as TXT</button>
+        <button id="export-xls" class="btn btn-info">Export as XLS</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('email-form').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const url = document.getElementById('url').value;
+      try {
+        const response = await fetch('/extract-emails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ url }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const result = await response.json();
+        if (result.message) {
+          displayNoEmails();
+        } else {
+          displayEmails(result.emails, result.count);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+
+    function displayEmails(emails, count) {
+      const emailContainer = document.getElementById('email-list');
+      emailContainer.innerHTML = emails.map(email => `<div>${email}</div>`).join('');
+      document.getElementById('email-count').textContent = `(${count} found)`;
+
+      document.getElementById('copy-emails').onclick = () => copyToClipboard(emails.join(', '));
+      document.getElementById('export-csv').onclick = () => exportToFile(emails, 'emails.csv', 'text/csv');
+      document.getElementById('export-txt').onclick = () => exportToFile(emails, 'emails.txt', 'text/plain');
+      document.getElementById('export-xls').onclick = () => exportToFile(emails, 'emails.xls', 'application/vnd.ms-excel');
+    }
+
+    function displayNoEmails() {
+      const emailContainer = document.getElementById('email-list');
+      emailContainer.innerHTML = '<div>No valid emails found.</div>';
+      document.getElementById('email-count').textContent = '';
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Emails copied to clipboard');
+      }, (err) => {
+        console.error('Could not copy text: ', err);
+      });
+    }
+
+    function exportToFile(data, filename, mimeType) {
+      const blob = new Blob([data.join('\n')], { type: mimeType });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
+``
