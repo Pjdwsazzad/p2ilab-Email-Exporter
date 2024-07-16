@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <title>p2ilab Email Exporter Bot V2</title>
 </head>
 <body>
     <header>
@@ -13,7 +13,6 @@
         <section>
             <h2>Description</h2>
             <p>The p2ilab Email Exporter Bot V2 is a powerful tool designed for extracting and exporting email addresses from various sources efficiently. Built with Node.js, this bot offers robust features to streamline email scraping tasks.</p>
-            <p> <a href="https://p2ilab-email-exporter-bot-v2.glitch.me/" target="_blank">https://p2ilab-email-exporter-bot-v2.glitch.me/</a></p>
             <h3>Features:</h3>
             <ul>
                 <li><strong>Website Email Extraction:</strong> Extracts emails from any website.</li>
