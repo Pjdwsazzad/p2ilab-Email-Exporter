@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <title>p2ilab Email Exporter Bot V2</title>
 </head>
 <body>
     <header>
@@ -20,12 +20,6 @@
                 <li><strong>Google Search Integration:</strong> Extracts emails using Google search queries.</li>
                 <li><strong>Export Options:</strong> Supports exporting emails in CSV, TXT, and XLS formats.</li>
             </ul>
-        </section>
-        <section>
-            <h2>Contact</h2>
-            <p><strong>Author:</strong> Md Sazzad Hosen</p>
-            <p><strong>Email:</strong> <a href="mailto:sazzad.pages.dev@gmail.com">sazzad.pages.dev@gmail.com</a></p>
-            <p><strong>Website:</strong> <a href="https://p2ilab.com" target="_blank">p2ilab.com</a></p>
         </section>
         <section>
             <h2>Deployment Instructions</h2>
@@ -56,6 +50,23 @@
                 <pre><code>npm start</code></pre>
                 <li>Access your deployed application on Glitch.</li>
             </ol>
+        </section>
+        <section>
+            <h2>Contact</h2>
+            <p><strong>Author:</strong> Md Sazzad Hosen</p>
+            <p><strong>Email:</strong> <a href="mailto:sazzad.pages.dev@gmail.com">sazzad.pages.dev@gmail.com</a></p>
+            <p><strong>Website:</strong> <a href="https://p2ilab.com" target="_blank">p2ilab.com</a></p>
+        </section>
+        <section>
+            <h2>Support</h2>
+            <p>If you find this tool useful, consider supporting its development:</p>
+            <form action="https://www.paypal.com/donate" method="post" target="_blank">
+                <input type="hidden" name="business" value="abigailrlopez023@gmail.com">
+                <input type="hidden" name="currency_code" value="USD">
+                <input type="hidden" name="amount" value="1.00">
+                <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="Donate with PayPal">
+                <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+            </form>
         </section>
     </div>
 </body>
