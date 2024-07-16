@@ -1,0 +1,24 @@
+{
+  "name": "email-extractor-bot",
+  "version": "1.0.0",
+  "description": "A Node.js bot that extracts emails from web pages and sends them to a Telegram bot.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cheerio": "^1.0.0-rc.12",
+    "csv-writer": "^1.6.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "fast-csv": "^4.3.6",
+    "form-data": "^4.0.0",
+    "json2csv": "^6.0.0-alpha.2",
+    "node-fetch": "^2.6.1",
+    "puppeteer": "^19.1.1",
+    "validator": "^13.7.0"
+  },
+  "author": "Md Sazzad Hosen",
+  "license": "MIT"
+}
