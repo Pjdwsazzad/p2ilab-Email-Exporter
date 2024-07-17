@@ -1,115 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Combined HTML Example</title>
-  <style>
-    /* CSS styles from both HTML documents can be combined here */
-    body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-    }
-    .container {
-        max-width: 600px;
-        margin: auto;
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-    }
-    .form-group {
-        margin-bottom: 15px;
-    }
-    .form-group label {
-        display: block;
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-    .form-group input[type="text"],
-    .form-group input[type="number"] {
-        width: 100%;
-        padding: 8px;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Combined HTML - Google Search URL Generator & Email Extractor</title>
+<style>
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="url"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.form-group input[type="submit"],
+.btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-group input[type="submit"]:hover,
+.btn:hover {
+    background-color: #45a049;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.popup.active {
+    display: block;
+}
+
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.close-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.close-button:hover {
+    background-color: #d32f2f;
+}
+
+.email-card {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.card {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+}
+
+.card-footer {
+    margin-top: 10px;
+    text-align: right;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+    border: none;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: white;
+    border: none;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+}
+    input[type="url"] {
+        width: calc(100% - 20px);
+        padding: 10px;
         border: 1px solid #ccc;
         border-radius: 4px;
         box-sizing: border-box;
+        transition: border-color 0.3s ease;
     }
-    .form-group input[type="submit"] {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
+
+    input[type="url"]:focus {
+        border-color: #4CAF50;
     }
-    .form-group input[type="submit"]:hover {
-        background-color: #45a049;
-    }
-    .popup {
-        display: none;
-        position: fixed;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #fff;
-        padding: 20px;
-        border: 1px solid #ccc;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        z-index: 1000;
-    }
-    .popup.active {
-        display: block;
-    }
-    .popup-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-    .close-button {
-        background-color: #f44336;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        border-radius: 3px;
-        cursor: pointer;
-    }
-    .close-button:hover {
-        background-color: #d32f2f;
-    }
-    .email-card {
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    .loader {
-        display: none;
-        border: 5px solid #f3f3f3;
-        border-radius: 50%;
-        border-top: 5px solid #3498db;
-        width: 50px;
-        height: 50px;
-        animation: spin 1s linear infinite;
-        position: fixed;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 999;
-    }
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    #time-limit {
-        font-size: 12px;
-        color: #999;
-        margin-top: 5px;
-    }
-  </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+
+</style>
 </head>
 <body>
 
-<!-- First HTML content (Google Search URL Generator) -->
 <div class="container">
     <h2>Google Search URL Generator</h2>
     <form id="googleSearchForm" onsubmit="generateURL(event)">
@@ -126,11 +188,32 @@
             <input type="number" id="resultsPerPage" name="resultsPerPage" placeholder="Enter results per page" min="1" max="100" required>
         </div>
         <div class="form-group">
-            <input type="submit" value="Generate Google Search URL">
-            <button type="button" onclick="previousPage()">Previous Page</button>
-            <button type="button" onclick="nextPage()">Next Page</button>
+            <input type="submit" value="Generate Google Search URL" class="btn">
         </div>
     </form>
+</div>
+
+<div class="container">
+    <h1>Email Extractor</h1>
+    <form id="email-form" class="mb-3">
+        <div class="mb-3">
+            <label for="url" class="form-label">URL</label>
+            <input type="url" class="form-control" id="url" name="url" placeholder="Paste generated Google search URL here" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Extract Emails</button>
+    </form>
+    <div id="email-container" class="card">
+        <div class="card-body">
+            <h5 class="card-title">Extracted Emails <span id="email-count"></span></h5>
+            <div id="email-list" class="email-card"></div>
+        </div>
+        <div class="card-footer">
+            <button id="copy-emails" class="btn btn-secondary">Copy Emails</button>
+            <button id="export-csv" class="btn btn-success">Export as CSV</button>
+            <button id="export-txt" class="btn btn-warning">Export as TXT</button>
+            <button id="export-xls" class="btn btn-info">Export as XLS</button>
+        </div>
+    </div>
 </div>
 
 <div id="popup" class="popup">
@@ -140,160 +223,110 @@
     </div>
     <textarea id="generatedUrl" rows="4" readonly></textarea>
     <div style="margin-top: 10px;">
-        <button onclick="copyUrl()">Copy URL</button>
-        <a id="openInGoogle" href="#" target="_blank">Open in Google</a>
+        <button onclick="copyUrl()" class="btn">Copy URL</button>
+        <a id="openInGoogle" href="#" target="_blank" class="btn btn-primary">Open in Google</a>
     </div>
 </div>
 
-<!-- Second HTML content (Email Extractor) -->
-<div class="container mt-5">
-    <h1>Email Extractor</h1>
-    <form id="email-form" class="mb-3">
-      <div class="mb-3">
-        <label for="url" class="form-label">URL(Max 5 Request Per Minute)</label>
-        <input type="url" class="form-control" id="url" name="url" required>
-      </div>
-      <button type="submit" class="btn btn-primary">Extract Emails</button>
-      <div id="time-limit" style="font-size: 12px; color: #999; margin-top: 5px;"></div>
-    </form>
-    <div id="email-container" class="card">
-      <div class="card-body">
-        <h5 class="card-title">Extracted Emails <span id="email-count"></span></h5>
-        <div id="email-list" class="email-card"></div>
-      </div>
-      <div class="card-footer">
-        <button id="copy-emails" class="btn btn-secondary">Copy Emails</button>
-        <button id="export-csv" class="btn btn-success">Export as CSV</button>
-        <button id="export-txt" class="btn btn-warning">Export as TXT</button>
-        <button id="export-xls" class="btn btn-info">Export as XLS</button>
-      </div>
-    </div>
-    <div class="loader" id="loader"></div>
-  </div>
+<script>
+function generateURL(event) {
+    event.preventDefault();
+    
+    var site = document.getElementById('site').value.trim();
+    var queriesInput = document.getElementById('queries').value.trim();
+    var queries = queriesInput.split(',').map(query => query.trim()).join(' ');
+    var resultsPerPage = document.getElementById('resultsPerPage').value.trim();
+    
+    var encodedSite = encodeURIComponent('site:' + site);
+    var encodedQuery = encodeURIComponent(queries);
+    var googleUrl = 'https://www.google.com/search?q=' + encodedSite + '+' + encodedQuery + '&num=' + resultsPerPage;
+    
+    document.getElementById('generatedUrl').value = googleUrl;
+    document.getElementById('openInGoogle').href = googleUrl;
+
+    // Automatically insert generated URL into Email Extractor form
+    document.getElementById('url').value = googleUrl;
+    
+    document.getElementById('popup').classList.add('active');
+}
+
+function closePopup() {
+    document.getElementById('popup').classList.remove('active');
+}
+
+function copyUrl() {
+    var urlField = document.getElementById('generatedUrl');
+    urlField.select();
+    document.execCommand('copy');
+    
+    alert('URL copied to clipboard!');
+}
+</script>
 
 <script>
-  // JavaScript from both HTML documents can be combined here
-  let currentPage = 1;
-  let lastRequestTime = 0;
-  const maxRequestsPerMinute = 10; // Adjust this as needed
-
-  function generateURL(event) {
-      event.preventDefault();
-
-      var site = document.getElementById('site').value.trim();
-      var queriesInput = document.getElementById('queries').value.trim();
-      var queries = queriesInput.split(',').map(query => query.trim()).join(' ');
-      var resultsPerPage = document.getElementById('resultsPerPage').value.trim();
-
-      var encodedSite = encodeURIComponent('site:' + site);
-      var encodedQuery = encodeURIComponent(queries);
-      var googleUrl = 'https://www.google.com/search?q=' + encodedSite + '+' + encodedQuery + '&num=' + resultsPerPage + '&start=' + ((currentPage - 1) * resultsPerPage);
-
-      document.getElementById('generatedUrl').value = googleUrl;
-      document.getElementById('openInGoogle').href = googleUrl;
-
-      document.getElementById('popup').classList.add('active');
-
-      // Set the generated URL into the Email Extractor URL field
-      document.getElementById('url').value = googleUrl;
-  }
-
-  function previousPage() {
-    if (currentPage > 1) {
-      currentPage--;
-      generateURL(event);
-    }
-  }
-
-  function nextPage() {
-    currentPage++;
-    generateURL(event);
-  }
-
-  function closePopup() {
-      document.getElementById('popup').classList.remove('active');
-  }
-
-  function copyUrl() {
-      var urlField = document.getElementById('generatedUrl');
-      urlField.select();
-      document.execCommand('copy');
-
-      alert('URL copied to clipboard!');
-  }
-
-  document.getElementById('email-form').addEventListener('submit', async function (event) {
-      event.preventDefault();
-      const url = document.getElementById('url').value;
-      const loader = document.getElementById('loader');
-      const timeLimit = document.getElementById('time-limit');
-
-      // Check if enough time has passed since the last request
-      const currentTime = new Date().getTime();
-      const timeSinceLastRequest = currentTime - lastRequestTime;
-      if (timeSinceLastRequest < (60 * 1000) / maxRequestsPerMinute) {
-        const waitTime = Math.ceil(((60 * 1000) / maxRequestsPerMinute - timeSinceLastRequest) / 1000);
-        timeLimit.textContent = `Please wait ${waitTime} seconds before making another request.`;
-        return;
-      }
-
-      try {
-        // Show loader
-        loader.style.display = 'block';
-
-        // Make request
+document.getElementById('email-form').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const url = document.getElementById('url').value;
+    try {
         const response = await fetch('/extract-emails', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ url }),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url }),
         });
 
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+            throw new Error('Network response was not ok');
         }
 
         const result = await response.json();
         if (result.message) {
-          displayNoEmails();
+            displayNoEmails();
         } else {
-          displayEmails(result.emails, result.count);
+            displayEmails(result.emails, result.count);
         }
-      } catch (error) {
+    } catch (error) {
         console.error('Error:', error);
-      } finally {
-        // Hide loader and update last request time
-        loader.style.display = 'none';
-        lastRequestTime = new Date().getTime();
-        timeLimit.textContent = ''; // Clear time limit message
-      }
-    });
-
-    function displayEmails(emails, count) {
-      const emailContainer = document.getElementById('email-list');
-      emailContainer.innerHTML = emails.map(email => `<div>${email}</div>`).join('');
-      document.getElementById('email-count').textContent = `(${count} found)`;
-
-      document.getElementById('copy-emails').onclick = () => copyToClipboard(emails.join(', '));
-      document.getElementById('export-csv').onclick = () => exportToFile(emails, 'emails.csv', 'text/csv');
-      document.getElementById('export-txt').onclick = () => exportToFile(emails, 'emails.txt', 'text/plain');
-      document.getElementById('export-xls').onclick = () => exportToFile(emails, 'emails.xls', 'application/vnd.ms-excel');
     }
+});
 
-    function displayNoEmails() {
-      const emailContainer = document.getElementById('email-list');
-      emailContainer.innerHTML = '<div>No valid emails found.</div>';
-      document.getElementById('email-count').textContent = '';
-    }
+function displayEmails(emails, count) {
+    const emailContainer = document.getElementById('email-list');
+    emailContainer.innerHTML = emails.map(email => `<div>${email}</div>`).join('');
+    document.getElementById('email-count').textContent = `(${count} found)`;
 
-    function copyToClipboard(text) {
-      navigator.clipboard.writeText(text).then(() => {
+    document.getElementById('copy-emails').onclick = () => copyToClipboard(emails.join(', '));
+    document.getElementById('export-csv').onclick = () => exportToFile(emails, 'emails.csv', 'text/csv');
+    document.getElementById('export-txt').onclick = () => exportToFile(emails, 'emails.txt', 'text/plain');
+    document.getElementById('export-xls').onclick = () => exportToFile(emails, 'emails.xls', 'application/vnd.ms-excel');
+}
+
+function displayNoEmails() {
+    const emailContainer = document.getElementById('email-list');
+    emailContainer.innerHTML = '<div>No valid emails found.</div>';
+    document.getElementById('email-count').textContent = '';
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
         alert('Emails copied to clipboard');
-      }, (err) => {
+    }, (err) => {
         console.error('Could not copy text: ', err);
-      });
-    }
+    });
+}
+
+function exportToFile(data, filename, mimeType) {
+    const blob = new Blob([data.join('\n')], { type: mimeType });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
 </script>
 
 </body>
