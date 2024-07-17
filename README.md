@@ -9,9 +9,7 @@ The p2ilab Email Exporter Bot V2 is a powerful tool designed for extracting and 
 - **Google Search Integration:** Extracts emails using Google search queries.
 - **Export Options:** Supports exporting emails in CSV, TXT, and XLS formats.
 
-## Project Link
 
-- **Project Website:** [p2ilab Email Exporter Bot V2](https://p2ilab-email-exporter-bot-v2.glitch.me/)
 
 ## Deployment Instructions
 
