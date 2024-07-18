@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Google Search URL Generator & Email Extractor</title>
+<title>Combined HTML - Google Search URL Generator & Email Extractor</title>
 <style>
 /* Global Styles */
 body {
@@ -67,6 +67,7 @@ body {
     border: 1px solid #ccc;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     z-index: 1000;
+    user-select: none; /* Prevent text selection during drag */
 }
 
 .popup.active {
@@ -155,18 +156,19 @@ body {
 .btn-info:hover {
     background-color: #138496;
 }
-    input[type="url"] {
-        width: calc(100% - 20px);
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-        transition: border-color 0.3s ease;
-    }
 
-    input[type="url"]:focus {
-        border-color: #4CAF50;
-    }
+input[type="url"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+input[type="url"]:focus {
+    border-color: #4CAF50;
+}
 
 </style>
 </head>
@@ -216,7 +218,7 @@ body {
     </div>
 </div>
 
-<div id="popup" class="popup">
+<div id="popup" class="popup" draggable="true">
     <div class="popup-header">
         <h3>Generated Google Search URL</h3>
         <button class="close-button" onclick="closePopup()">Close</button>
@@ -226,9 +228,54 @@ body {
         <button onclick="copyUrl()" class="btn">Copy URL</button>
         <a id="openInGoogle" href="#" target="_blank" class="btn btn-primary">Open in Google</a>
     </div>
+    <div style="margin-top: 10px;">
+        <button onclick="previousPage()" class="btn btn-secondary">Previous Page</button>
+        <button onclick="nextPage()" class="btn btn-secondary">Next Page</button>
+    </div>
 </div>
 
 <script>
+var generatedUrls = [];
+var currentIndex = -1;
+var currentStartIndex = 0; // Initialize currentStartIndex
+
+// Variables for dragging functionality
+var active = false;
+var initialX;
+var initialY;
+var currentX;
+var currentY;
+
+var popup = document.getElementById('popup');
+
+popup.addEventListener('mousedown', dragStart, false);
+popup.addEventListener('mouseup', dragEnd, false);
+popup.addEventListener('mousemove', drag, false);
+
+function dragStart(e) {
+    if (e.target.classList.contains('popup-header')) {
+        active = true;
+        initialX = e.clientX;
+        initialY = e.clientY;
+    }
+}
+
+function dragEnd() {
+    active = false;
+}
+
+function drag(e) {
+    if (active) {
+        e.preventDefault();
+        currentX = initialX - e.clientX;
+        currentY = initialY - e.clientY;
+        initialX = e.clientX;
+        initialY = e.clientY;
+        popup.style.left = (popup.offsetLeft - currentX) + 'px';
+        popup.style.top = (popup.offsetTop - currentY) + 'px';
+    }
+}
+
 function generateURL(event) {
     event.preventDefault();
     
@@ -239,93 +286,137 @@ function generateURL(event) {
     
     var encodedSite = encodeURIComponent('site:' + site);
     var encodedQuery = encodeURIComponent(queries);
-    var googleUrl = 'https://www.google.com/search?q=' + encodedSite + '+' + encodedQuery + '&num=' + resultsPerPage;
+    var googleUrl = 'https://www.google.com/search?q=' + encodedSite + '+' + encodedQuery + '&num=' + resultsPerPage + '&start=' + currentStartIndex;
     
-    document.getElementById('generatedUrl').value = googleUrl;
-    document.getElementById('openInGoogle').href = googleUrl;
-
-    // Automatically insert generated URL into Email Extractor form
+    generatedUrls.push(googleUrl);
+    currentIndex = generatedUrls.length - 1;
+    
+    updatePopup();
+    
+    // Update URL input in Email Extractor
     document.getElementById('url').value = googleUrl;
+}
+
+function updatePopup() {
+    var urlField = document.getElementById('generatedUrl');
+    var openInGoogleLink = document.getElementById('openInGoogle');
     
-    document.getElementById('popup').classList.add('active');
+    urlField.value = generatedUrls[currentIndex];
+    openInGoogleLink.href = generatedUrls[currentIndex];
+    
+    popup.classList.add('active');
 }
 
 function closePopup() {
-    document.getElementById('popup').classList.remove('active');
+    popup.classList.remove('active');
 }
 
 function copyUrl() {
     var urlField = document.getElementById('generatedUrl');
     urlField.select();
     document.execCommand('copy');
-    
     alert('URL copied to clipboard!');
 }
-</script>
 
-<script>
+function previousPage() {
+    if (currentStartIndex >= 10) {
+        currentStartIndex -= 100;
+        generateURL(new Event('submit'));
+    }
+}
+
+function nextPage() {
+    currentStartIndex += 100;
+    generateURL(new Event('submit'));
+}
+
+// Function to extract emails
 document.getElementById('email-form').addEventListener('submit', async function (event) {
     event.preventDefault();
-    const url = document.getElementById('url').value;
+    
+    var url = document.getElementById('url').value.trim();
+    
     try {
         const response = await fetch('/extract-emails', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ url }),
+            body: JSON.stringify({ url })
         });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const result = await response.json();
-        if (result.message) {
-            displayNoEmails();
+        
+        if (response.ok) {
+            const result = await response.json();
+            if (result.emails.length > 0) {
+                displayEmails(result.emails);
+            } else {
+                displayNoEmails();
+            }
         } else {
-            displayEmails(result.emails, result.count);
+            displayNoEmails();
         }
     } catch (error) {
         console.error('Error:', error);
+        displayNoEmails();
     }
 });
 
-function displayEmails(emails, count) {
-    const emailContainer = document.getElementById('email-list');
-    emailContainer.innerHTML = emails.map(email => `<div>${email}</div>`).join('');
-    document.getElementById('email-count').textContent = `(${count} found)`;
-
-    document.getElementById('copy-emails').onclick = () => copyToClipboard(emails.join(', '));
-    document.getElementById('export-csv').onclick = () => exportToFile(emails, 'emails.csv', 'text/csv');
-    document.getElementById('export-txt').onclick = () => exportToFile(emails, 'emails.txt', 'text/plain');
-    document.getElementById('export-xls').onclick = () => exportToFile(emails, 'emails.xls', 'application/vnd.ms-excel');
+function displayEmails(emails) {
+    const emailList = document.getElementById('email-list');
+    emailList.innerHTML = '';
+    emails.forEach((email, index) => {
+        const emailItem = document.createElement('div');
+        emailItem.textContent = email;
+        emailList.appendChild(emailItem);
+    });
+    document.getElementById('email-count').textContent = `(${emails.length})`;
 }
 
 function displayNoEmails() {
-    const emailContainer = document.getElementById('email-list');
-    emailContainer.innerHTML = '<div>No valid emails found.</div>';
+    const emailList = document.getElementById('email-list');
+    emailList.innerHTML = '<p>No emails found.</p>';
     document.getElementById('email-count').textContent = '';
 }
 
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        alert('Emails copied to clipboard');
-    }, (err) => {
-        console.error('Could not copy text: ', err);
+document.getElementById('copy-emails').addEventListener('click', function () {
+    const emails = Array.from(document.getElementById('email-list').children).map(item => item.textContent);
+    const textToCopy = emails.join('\n');
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        alert('Emails copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy emails: ', err);
     });
-}
+});
 
-function exportToFile(data, filename, mimeType) {
-    const blob = new Blob([data.join('\n')], { type: mimeType });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
+document.getElementById('export-csv').addEventListener('click', function () {
+    exportEmails('csv');
+});
+
+document.getElementById('export-txt').addEventListener('click', function () {
+    exportEmails('txt');
+});
+
+document.getElementById('export-xls').addEventListener('click', function () {
+    exportEmails('xls');
+});
+
+function exportEmails(format) {
+    const emails = Array.from(document.getElementById('email-list').children).map(item => item.textContent);
+    const filename = 'emails.' + format;
+    const blob = new Blob([emails.join('\n')], { type: 'text/plain' });
+
+    const anchor = document.createElement('a');
+    anchor.download = filename;
+    anchor.href = window.URL.createObjectURL(blob);
+    anchor.target = '_blank';
+    anchor.style.display = 'none';
+    document.body.appendChild(anchor);
+    anchor.click();
+
+    setTimeout(() => {
+        document.body.removeChild(anchor);
+        window.URL.revokeObjectURL(anchor.href);
+    }, 100);
 }
 </script>
 
