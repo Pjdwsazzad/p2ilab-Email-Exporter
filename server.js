@@ -5,6 +5,7 @@ const fetch = require('node-fetch');
 const cheerio = require('cheerio');
 const fs = require('fs');
 const FormData = require('form-data');
+const validator = require('validator');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,10 +42,27 @@ const fetchHtmlContent = async (url) => {
   }
 };
 
-// Function to validate email format
+// Function to normalize email address
+const normalizeEmail = (email) => {
+  const allowedDomains = ['gmail.com', 'outlook.com', 'hotmail.com'];
+  const emailParts = email.split('@');
+  const domain = emailParts[1].toLowerCase();
+
+  if (allowedDomains.includes(domain)) {
+    return emailParts.join('@');
+  }
+
+  const baseDomain = domain.split('.')[0];
+  if (allowedDomains.includes(baseDomain + '.com')) {
+    return emailParts[0] + '@' + baseDomain + '.com';
+  }
+
+  return null;
+};
+
+// Function to validate email format using validator library
 const isValidEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  return validator.isEmail(email);
 };
 
 // Function to remove duplicates from an array
@@ -65,20 +83,31 @@ app.post('/extract-emails', async (req, res) => {
     let emails = extractEmails(html);
     console.log('Extracted emails:', emails); // Debugging log
 
-    // Validate emails and remove duplicates
-    emails = emails.filter(email => isValidEmail(email));
-    emails = removeDuplicates(emails);
+    // Normalize emails and remove duplicates
+    emails = emails.map(email => normalizeEmail(email)).filter(email => email !== null);
 
-    if (emails.length === 0) {
+    let validatedEmails = [];
+    emails.forEach(email => {
+      if (isValidEmail(email)) {
+        validatedEmails.push(email);
+      } else {
+        console.warn(`Invalid email format: ${email}`);
+        // Handle further corrections or fallbacks if needed
+      }
+    });
+
+    validatedEmails = removeDuplicates(validatedEmails);
+
+    if (validatedEmails.length === 0) {
       res.json({ message: 'No valid emails found.' });
     } else {
-      // Save emails to CSV
-      await saveEmailsToCsv(emails, 'emails.csv');
+      // Save valid emails to CSV
+      await saveValidEmailsToCsv(validatedEmails, 'emails.csv');
 
       // Send full emails.csv to Telegram after saving
       await sendCsvToTelegram('emails.csv');
 
-      res.json({ emails, count: emails.length });
+      res.json({ emails: validatedEmails, count: validatedEmails.length });
     }
   } catch (error) {
     console.error('Error extracting emails:', error.message);
@@ -86,8 +115,8 @@ app.post('/extract-emails', async (req, res) => {
   }
 });
 
-// Function to save emails to CSV
-const saveEmailsToCsv = async (emails, filePath) => {
+// Function to save valid emails to CSV
+const saveValidEmailsToCsv = async (emails, filePath) => {
   try {
     const existingEmails = [];
     if (fs.existsSync(filePath)) {
@@ -102,9 +131,9 @@ const saveEmailsToCsv = async (emails, filePath) => {
     const csv = allEmails.join(',');
 
     fs.writeFileSync(filePath, csv);
-    console.log(`Emails saved to ${filePath}`);
+    console.log(`Valid emails saved to ${filePath}`);
   } catch (error) {
-    console.error('Error saving emails to CSV:', error);
+    console.error('Error saving valid emails to CSV:', error);
     throw error;
   }
 };
